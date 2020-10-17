@@ -1,0 +1,15 @@
+4 4
+0 0 3 3
+12
+/mnt/qnas2/datasets/gl3d/5beb6e66abd34c35e18e66b9_output/mesh/2.mesh/2.3.final/tile_0_0.obj 0 0 1
+/mnt/qnas2/datasets/gl3d/5beb6e66abd34c35e18e66b9_output/mesh/2.mesh/2.3.final/tile_0_1.obj 0 1 1
+/mnt/qnas2/datasets/gl3d/5beb6e66abd34c35e18e66b9_output/mesh/2.mesh/2.3.final/tile_1_0.obj 1 0 1
+/mnt/qnas2/datasets/gl3d/5beb6e66abd34c35e18e66b9_output/mesh/2.mesh/2.3.final/tile_1_1.obj 1 1 1
+/mnt/qnas2/datasets/gl3d/5beb6e66abd34c35e18e66b9_output/mesh/2.mesh/2.3.final/tile_1_2.obj 1 2 1
+/mnt/qnas2/datasets/gl3d/5beb6e66abd34c35e18e66b9_output/mesh/2.mesh/2.3.final/tile_1_3.obj 1 3 1
+/mnt/qnas2/datasets/gl3d/5beb6e66abd34c35e18e66b9_output/mesh/2.mesh/2.3.final/tile_2_1.obj 2 1 1
+/mnt/qnas2/datasets/gl3d/5beb6e66abd34c35e18e66b9_output/mesh/2.mesh/2.3.final/tile_2_2.obj 2 2 1
+/mnt/qnas2/datasets/gl3d/5beb6e66abd34c35e18e66b9_output/mesh/2.mesh/2.3.final/tile_2_3.obj 2 3 1
+/mnt/qnas2/datasets/gl3d/5beb6e66abd34c35e18e66b9_output/mesh/2.mesh/2.3.final/tile_3_1.obj 3 1 1
+/mnt/qnas2/datasets/gl3d/5beb6e66abd34c35e18e66b9_output/mesh/2.mesh/2.3.final/tile_3_2.obj 3 2 1
+/mnt/qnas2/datasets/gl3d/5beb6e66abd34c35e18e66b9_output/mesh/2.mesh/2.3.final/tile_3_3.obj 3 3 1

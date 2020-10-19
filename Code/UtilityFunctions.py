@@ -20,6 +20,15 @@ def perf_time(func):
         return result
     return wrap
 
+def perf_time_output(func):
+    def wrap(*args):
+        start = time.time()
+        result = func(*args)
+        cost = time.time() - start
+        print("{} used {} s".format(func.__name__, cost))
+        return (result,cost)
+    return wrap
+
 def L2Norm(actualValue,predictedValue):
     return np.sum(np.power((actualValue-predictedValue),2))
 

@@ -42,6 +42,8 @@ class MeshData(object):
             return temp
 
     def getMeshCombined(self):
+        if len(self.__meshList)==0:
+            self.getMeshList()
         outMesh = o3d.open3d_pybind.geometry.TriangleMesh()
         for m in self.__meshList:
             outMesh += m
@@ -68,7 +70,7 @@ if __name__ == "__main__":
 
     a = os.path.join(os.getcwd(),"Test\\textured_mesh")
     out = os.path.join(os.getcwd(),"out.ply")
-    b = myMeshData(a)
+    b = MeshData(a)
     dd = b.getMeshList()
     outMesh = o3d.open3d_pybind.geometry.TriangleMesh()
     for m in dd:

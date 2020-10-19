@@ -39,6 +39,7 @@ class MeshData(object):
                 mesh = o3d.io.read_triangle_mesh(path)
                 temp.append(mesh)
             self.__meshList = temp
+            print("Triangle Mesh Loaded.")
             return temp
 
     def getMeshCombined(self):
@@ -47,6 +48,7 @@ class MeshData(object):
         outMesh = o3d.open3d_pybind.geometry.TriangleMesh()
         for m in self.__meshList:
             outMesh += m
+        print("Mesh Combined.")
         return outMesh
 
 

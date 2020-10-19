@@ -8,8 +8,10 @@ from cv2 import cv2
 import numpy as np
 import math,time,os,shutil,copy
 import open3d as o3d
+from tqdm import tqdm
 import UtilityFunctions as util
 from MeshData import MeshData
+
 
 class Pa3dmp(object):
     def loadPointCloud(self,PointCloudPath):
@@ -57,7 +59,9 @@ class Pa3dmp(object):
         # build tree for search
         meshKDtree = o3d.geometry.KDTreeFlann(triangleMesh)
         verticesArr = np.asarray(triangleMesh.vertices)
-        for pidx in range(len(pointCloud.points)):
+        #simple timer to estimate the process time
+        print("Point cloud compare to triangle mesh started!")
+        for pidx in tqdm(range(len(pointCloud.points)),desc="Progress of working:"):
             p = pointCloud.points[pidx]
             # m is the idx of all near points.knn is slow an
             # m = meshKDtree.search_radius_vector_3d(p,radius)
@@ -87,8 +91,8 @@ class Pa3dmp(object):
                 if d!=float('inf'):
                     temp =np.hstack((pidx,p,cur,d)).reshape((1,14))
                     re = np.append(re,temp,axis=0)
-            print("%s / %s" % (pidx,pointAmount))
-            # if pidx == 5000:
+            # To stop earlier
+            # if pidx == 500:
             #     break
         return re
 
@@ -101,17 +105,25 @@ class Pa3dmp(object):
         out = out.paint_uniform_color([1,1,1])
         for i in range(len(dataArr[:,0])):
             line = dataArr[i]
-            rate = (line[13]/dif)*255
-            out.colors[int(line[0])] = np.array([255,rate,0])
+            rate = 1 - line[13]/dif
+            out.colors[int(line[0])] = np.array([1,rate,0])
         o3d.io.write_point_cloud(r".\Result\Result_{}.ply".format(namePrefix),out,write_ascii=True,print_progress=True)
+        return out
 
     def compare(self,pointCloud,mesh):
         pc1 = pointCloud
-        pc2 = mesh.sample_points_uniformly(420000,use_triangle_normal=False,seed=-1)
+        pc2 = mesh.sample_points_uniformly(len(pc1.points),use_triangle_normal=False,seed=-1)
         pc1 = pc1.paint_uniform_color([1,0,0])
         pc2 = pc2.paint_uniform_color([0,0,1])
         pc3 = pc1+pc2
         o3d.io.write_point_cloud(r".\Result\Result_{}.ply".format("CompareSize"),pc3,write_ascii=True,print_progress=True)
+
+    def compareWithColoredPC(self,pointCloud,mesh):
+        pc1 = pointCloud
+        pc2 = mesh.sample_points_uniformly(len(pc1.points),use_triangle_normal=False,seed=-1)
+        pc2 = pc2.paint_uniform_color([0,0,1])
+        pc3 = pc1+pc2
+        o3d.io.write_point_cloud(r".\Result\Result_{}.ply".format("CompareWithColor"),pc3,write_ascii=True,print_progress=True)
 
 if __name__ == "__main__":
     # a = o3d.io.read_point_cloud(r"E:\OneDrive\CS800Run\CompareScript\Data\PointCloud\mvsnet000_l3.ply")
@@ -120,7 +132,7 @@ if __name__ == "__main__":
     plyPath = r"E:\OneDrive\CS800Run\PA3DMP\Data\PointCloud\mvsnet000_l3.ply"
     optPath = r"E:\OneDrive\CS800Run\PA3DMP\Data\PointCloud\mvsnet000_l3_opt.ply"
     meshFolder = r"E:\OneDrive\CS800Run\PA3DMP\Data\Mesh\textured_mesh"
-    ResultExample = r"Result\Result_2086.107739686966s.txt"
+    ResultExample = r"Result\Result_13758.92653298378s.txt"
     instance = Pa3dmp()
     # instance.resizePointCloud(r"E:\OneDrive\CS800Run\PA3DMP\Data\PointCloud\mvsnet000_l3.ply")
     # print(instance.p2fDistance(p,Face))
@@ -152,11 +164,12 @@ if __name__ == "__main__":
 
     plyOpt = instance.loadPointCloud(optPath)
     mesh = instance.loadTriangleMesh(meshFolder)
-    # re = instance.loopForPoints(plyOpt,mesh,0.02)
+    # re = instance.loopForPoints(plyOpt,mesh,0.005)
     # np.savetxt("./Result/Result_{}s.txt".format(re[1]),re[0],fmt="%.6f",newline="\n")
-    # data = np.loadtxt(ResultExample)
-    # instance.paintColor(plyOpt,data,"Test")
-    instance.compare(plyOpt,mesh)
+    data = np.loadtxt(ResultExample)
+    colored = instance.paintColor(plyOpt,data,"Test1")
+    # instance.compare(plyOpt,mesh)
+    instance.compareWithColoredPC(colored,mesh)
 
     print("Succeed")
 

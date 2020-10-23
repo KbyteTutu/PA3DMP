@@ -45,22 +45,10 @@ class Util(object):
         return cv2.imread(path,0)
 
     @staticmethod
-    def analyzeFilePath(self,path):
+    def analyzeFilePath(path):
         (filepath,tempfilename) = os.path.split(path)
         (filename,extension) = os.path.splitext(tempfilename)
         return (filename,filepath,extension)
-
-    @staticmethod
-    def combinePath(self,path,addition,ext = ''):
-        filename,filepath,extension = self.analyzeFilePath(path)
-        if ext=='':
-            ext = extension
-        temppath = os.path.join(filepath,addition)
-        if os.path.isdir(temppath)== False:
-            os.mkdir(temppath)
-        # result = filepath + "\\" + filename + addition + extension
-        result = os.path.join(filepath,addition,filename+ext)
-        return result
 
     @staticmethod
     def mkCleanDir(path):

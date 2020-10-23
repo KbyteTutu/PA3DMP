@@ -11,7 +11,8 @@ import open3d as o3d
 from tqdm import tqdm
 from  UtilityFunctions import Util
 from My3DData import *
-
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 class Pa3dmp(object):
 
@@ -94,6 +95,18 @@ class Pa3dmp(object):
         pc3 = pc1+pc2
         o3d.io.write_point_cloud(r".\Result\Result_{}.ply".format("CompareWithColor"),pc3,write_ascii=True,print_progress=True)
 
+    def generateHistgram(self,txt):
+        info =Util.analyzeFilePath(txt)
+        sns.set(style="darkgrid")
+        data = np.loadtxt(txt)
+        dataX = data[:,-1]
+        print(np.max(dataX))
+        print(np.min(dataX))
+        sns.distplot(dataX, kde=False)
+        plt.savefig(r"Result\Fig_of_{}.png".format(info[0]))
+        plt.show()
+
+
 if __name__ == "__main__":
     # a = o3d.io.read_point_cloud(r"E:\OneDrive\CS800Run\CompareScript\Data\PointCloud\mvsnet000_l3.ply")
     # b =o3d.geometry.PointCloud.remove_statistical_outlier(a,4,0.1)
@@ -103,6 +116,8 @@ if __name__ == "__main__":
     meshFolder = r"E:\OneDrive\CS800Run\PA3DMP\Data\Mesh\textured_mesh"
     ResultExample = r"Result\Result_13758.92653298378s.txt"
     instance = Pa3dmp()
+
+    instance.generateHistgram(r"Result\Result_uNAt8Qjg.txt")
     # instance.resizePointCloud(r"E:\OneDrive\CS800Run\PA3DMP\Data\PointCloud\mvsnet000_l3.ply")
     # print(instance.p2fDistance(p,Face))
     #instance.optimizePointCloud(plyPath)

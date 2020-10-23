@@ -79,7 +79,8 @@ class Pa3dmp(object):
             #     break
         return re
 
-    def compare(self,pointCloud,mesh):
+    @staticmethod
+    def compare(pointCloud,mesh):
         #对比点云和三角网络，原理是把三角网络改成均匀点云，然后输出一个点云来看。
         pc1 = pointCloud
         pc2 = mesh.sample_points_uniformly(len(pc1.points),use_triangle_normal=False,seed=-1)
@@ -88,23 +89,23 @@ class Pa3dmp(object):
         pc3 = pc1+pc2
         o3d.io.write_point_cloud(r".\Result\Result_{}.ply".format("CompareSize"),pc3,write_ascii=True,print_progress=True)
 
-    def compareWithColoredPC(self,pointCloud,mesh):
+    @staticmethod
+    def compareWithColoredPC(pointCloud,mesh):
         pc1 = pointCloud
         pc2 = mesh.sample_points_uniformly(len(pc1.points),use_triangle_normal=False,seed=-1)
         pc2 = pc2.paint_uniform_color([0,0,1])
         pc3 = pc1+pc2
         o3d.io.write_point_cloud(r".\Result\Result_{}.ply".format("CompareWithColor"),pc3,write_ascii=True,print_progress=True)
 
-    def generateHistgram(self,txt):
-        info =Util.analyzeFilePath(txt)
+    @staticmethod
+    def generateHistgram(txt):
+        info = Util.analyzeFilePath(txt)
         sns.set(style="darkgrid")
         data = np.loadtxt(txt)
         dataX = data[:,-1]
-        print(np.max(dataX))
-        print(np.min(dataX))
-        sns.distplot(dataX, kde=False)
+        sns.distplot(dataX,bins=200,kde=False)
         plt.savefig(r"Result\Fig_of_{}.png".format(info[0]))
-        plt.show()
+        # plt.show()
 
 
 if __name__ == "__main__":
@@ -117,7 +118,7 @@ if __name__ == "__main__":
     ResultExample = r"Result\Result_13758.92653298378s.txt"
     instance = Pa3dmp()
 
-    instance.generateHistgram(r"Result\Result_uNAt8Qjg.txt")
+    instance.generateHistgram(r"Result\Result_BekYGuZK.txt")
     # instance.resizePointCloud(r"E:\OneDrive\CS800Run\PA3DMP\Data\PointCloud\mvsnet000_l3.ply")
     # print(instance.p2fDistance(p,Face))
     #instance.optimizePointCloud(plyPath)

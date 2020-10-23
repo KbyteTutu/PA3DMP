@@ -26,12 +26,14 @@ class MultiPa3dmp(object):
 
     def mergeTxt(self):
         #Merge the result together.
-        with open("Result/Result_{}.txt".format(self.randomId),'w') as f:
+        path = "Result/Result_{}.txt".format(self.randomId)
+        with open(path,'w') as f:
             for (root,dirs,files) in os.walk(r"Workspace/txt"):
                 for file in files:
                     with open(os.path.join(root,file),'r') as k:
                         f.write(k.read())
         print("Txt Merged")
+        return path
 
 def funcWraper(name,meshpath):
     #包装一下，调用对象
@@ -50,7 +52,7 @@ def funcWraper(name,meshpath):
 if __name__ == '__main__':
     start = time.time()
     o3d.utility.set_verbosity_level(o3d.utility.VerbosityLevel.Error)
-    instance = MultiPa3dmp(r"Data/PointCloud/mvsnet000_l3_opt.ply",r"Data/Mesh/textured_mesh")
+    instance = MultiPa3dmp(r"Data\\mvsnet000_l3.ply",r"Data\\5b21e18c58e2823a67a10dd8\\textured_mesh")
     Util.mkCleanDir(r"Workspace")
     Util.mkCleanDir(r"Workspace/txt")
     nameList = instance.mesh.getObjNameList()
@@ -74,6 +76,8 @@ if __name__ == '__main__':
     p.join()
 
     end = time.time()
-    instance.mergeTxt()
-    # shutil.rmtree("Workspace")
-    print("执行时间:{}".format(end-start))
+    txtPath = instance.mergeTxt()
+    Pa3dmp.generateHistgram(txtPath)
+    shutil.rmtree("Workspace")
+    print("Result Txt is {} and the histgram fig of this txt".format(txtPath))
+    print("Executed Time:{}s".format(end-start))

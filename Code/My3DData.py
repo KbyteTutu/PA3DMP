@@ -95,6 +95,7 @@ class PointCloudData(object):
         o3d.io.write_point_cloud(r"E:\OneDrive\CS800Run\PA3DMP\Data\PointCloud\mvsnet000_l3_opt.ply",pointCloud[0],write_ascii=1)
 
     def paintColor(self,pointCloud,dataArr,namePrefix):
+        #TODO: need redo.
         dataArr = np.asarray(dataArr)
         out = copy.deepcopy(pointCloud)
         maxDis = np.max(dataArr[:,13])

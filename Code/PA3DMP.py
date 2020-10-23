@@ -113,8 +113,8 @@ if __name__ == "__main__":
     # b =o3d.geometry.PointCloud.remove_statistical_outlier(a,4,0.1)
     # o3d.io.write_point_cloud(r"E:\OneDrive\CS800Run\CompareScript\Data\PointCloud\mvsnet000_l3_2.ply",b[0],write_ascii=1)
     plyPath = r"E:\OneDrive\CS800Run\PA3DMP\Data\PointCloud\mvsnet000_l3.ply"
-    optPath = r"E:\OneDrive\CS800Run\PA3DMP\Data\PointCloud\mvsnet000_l3_opt.ply"
-    meshFolder = r"E:\OneDrive\CS800Run\PA3DMP\Data\Mesh\textured_mesh"
+    optPath = r"Data\Test\mvsnet000_l3.ply"
+    meshFolder = r"Data\\Test\\5b21e18c58e2823a67a10dd8\\textured_mesh"
     ResultExample = r"Result\Result_13758.92653298378s.txt"
     instance = Pa3dmp()
 
@@ -147,14 +147,14 @@ if __name__ == "__main__":
     # all[2] = line
     # print(all)
 
-    # plyOpt = instance.loadPointCloud(optPath)
-    # mesh = MeshData(meshFolder).getMeshCombined()
+    plyOpt = instance.loadPointCloud(optPath)
+    mesh = MeshData(meshFolder).getMeshCombined()
     # # re = instance.loopForPoints(plyOpt,mesh,0.005)
     # # np.savetxt("./Result/Result_{}s.txt".format(re[1]),re[0],fmt="%.6f",newline="\n")
-    # data = np.loadtxt(ResultExample)
-    # colored = instance.paintColor(plyOpt,data,"Test1")
-    # # instance.compare(plyOpt,mesh)
-    # instance.compareWithColoredPC(colored,mesh)
+    data = np.loadtxt(ResultExample)
+    colored = instance.paintColor(plyOpt,data,"Test1")
+    # instance.compare(plyOpt,mesh)
+    instance.compareWithColoredPC(colored,mesh)
 
     print("Succeed")
 

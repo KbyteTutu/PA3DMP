@@ -1,8 +1,11 @@
 
 /resultBackup/
 /Workspace/
+/WorkspaceTest/
+
 /Data/Test/
 /Result/
+TestPlayground.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

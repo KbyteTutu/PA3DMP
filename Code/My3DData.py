@@ -94,23 +94,25 @@ class PointCloudData(object):
         pointCloud = o3d.geometry.PointCloud.remove_statistical_outlier(p,4,0.1)
         o3d.io.write_point_cloud(r"E:\OneDrive\CS800Run\PA3DMP\Data\PointCloud\mvsnet000_l3_opt.ply",pointCloud[0],write_ascii=1)
 
-    def paintColor(self,pointCloud,dataArr,namePrefix):
+    def paintColor(self,dataArr,namePrefix):
         #TODO: need redo.
         dataArr = np.asarray(dataArr)
-        out = copy.deepcopy(pointCloud)
-        maxDis = np.max(dataArr[:,13])
-        minDis = np.min(dataArr[:,13])
-        dif = maxDis-minDis
-        out = out.paint_uniform_color([1,1,1])
-        for i in range(len(dataArr[:,0])):
-            line = dataArr[i]
-            rate = 1 - line[13]/dif
-            out.colors[int(line[0])] = np.array([1,rate,0])
-        o3d.io.write_point_cloud(r".\Result\Result_{}.ply".format(namePrefix),out,write_ascii=True,print_progress=True)
-        return out
+        # out = copy.deepcopy(self.pointCloudData)
+        maxDis = np.max(dataArr[:,12])
+        # minDis = np.min(dataArr[:,12])
+        # dif = maxDis-minDis
+        # out = out.paint_uniform_color([1,1,1])
+        # o3d.io.write_point_cloud(r".\Result\Result_{}.ply".format(namePrefix),out,write_ascii=True,print_progress=True)
+        with open(r".\Result\Result_man.ply",mode='a') as f:
+            for i in range(len(dataArr[:,0])):
+                line = dataArr[i]
+                rate = 1 - line[12]/maxDis
+                # out.colors[int(line[0])] = np.array([1,rate,0])
+                line = "{} {} {} {} {} {} \n".format(line[0],line[1],line[2],255,int(255*rate),0)
+                f.write(line)
+        return
 
     def seperatePointCloud(self,meshBoxList,nameList,saveFlag):
-        # TODO:把点云按照mesh的分块来分割成小块
         if saveFlag:
             Util.mkCleanDir(r"Workspace\ply")
         try:
@@ -153,8 +155,27 @@ if __name__ == "__main__":
     # o3d.visualization.draw_geometries(dd)
     # o3d.visualization.draw_geometries(b.getMeshList())
 
-    p = PointCloudData(r"Data\PointCloud\mvsnet000_l3.ply")
-    m = MeshData(r"Data\Mesh\textured_mesh")
+    # p = PointCloudData(r"Data\PointCloud\mvsnet000_l3.ply")
+    # m = MeshData(r"Data\Mesh\textured_mesh")
 
-    a =p.seperatePointCloud(m.getAxisBoundingBoxList(1.2),m.getObjNameList(),0)
-    print(a)
+    # a =p.seperatePointCloud(m.getAxisBoundingBoxList(1.2),m.getObjNameList(),0)
+    # print(a)
+
+    # a = PointCloudData(r"Workspace\ply\tile_1_4.ply")
+    # a.paintColor(np.loadtxt("Result\Result_BekYGuZK.txt"),"ceshi")
+    # cc = o3d.io.read_point_cloud("Result\Result_ceshi.ply")
+    # o3d.io.write_point_cloud("Result\Result_ceshi_opt.ply",cc)
+
+    # t = o3d.io.read_triangle_mesh(r"Data\Test\square2\square\textured_mesh\tile_11_1.obj")
+    # box = t.get_axis_aligned_bounding_box()
+    # box = box.scale(2,box.get_center())
+    # ply = o3d.io.read_point_cloud(r"Data\Test\square2\FusionPointClould.ply")
+
+    # r = ply.crop(box)
+    # o3d.io.write_point_cloud("WorkspaceTest\\1.ply",r,write_ascii=True,print_progress=True)
+
+    testMesh = o3d.io.read_triangle_mesh(r"Data\Test\Yard\ProvidedMeshModel\textured_mesh\tile_4_3.obj")
+    m = len(testMesh.vertices)
+    b = testMesh.select_by_index(np.arange(0,m,1))
+    
+    print ("1")

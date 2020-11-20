@@ -42,8 +42,8 @@ def pfm_png(pfm_file_path,png_file_path):
         plt.imsave(png_file_path, img)
 
 def main():
-    pfm_file_dir = r"E:\CS800Local\ToShow\scan77\confidence"
-    png_file_dir = r"E:\CS800Local\ToShow\scan77\confidence\1"
+    pfm_file_dir = r"E:\CS800Local\交工30日\Furniture\OriginPictures\rendered_depth_maps"
+    png_file_dir = r"E:\CS800Local\交工30日\Furniture\OriginPictures\1"
     pfm_png_file_name(pfm_file_dir, png_file_dir)
 
 if __name__ == '__main__':

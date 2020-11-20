@@ -41,10 +41,12 @@ def funcWraper(name,meshpath):
     p = Pa3dmp()
     plyPath = r"Workspace/ply/{}.ply".format(name)
     pointCloud = o3d.io.read_point_cloud(plyPath)
-    mesh = o3d.io.read_triangle_mesh(r"{}/{}.obj".format(meshpath,name))
-    re = p.loopForPoints(pointCloud,mesh,0.01)
-    np.savetxt(r"Workspace/txt/{}.txt".format(name),re,fmt="%.6f",newline="\n")
-    print("{} - done.".format(name))
+    if os.path.exists(r"{}/{}.obj".format(meshpath,name)):
+        mesh = o3d.io.read_triangle_mesh(r"{}/{}.obj".format(meshpath,name))
+        # re = p.loopForPoints(pointCloud,mesh,20)
+        re = p.loopForPoints_Remake(pointCloud,mesh,flag = 1)
+        np.savetxt(r"Workspace/txt/{}.txt".format(name),re,fmt="%.6f",newline="\n")
+        print("{} - done.".format(name))
     # a = np.array([0,2,5])
     # np.savetxt("Workspace/{}_.txt".format(name),a)
     # print("ok")
@@ -52,7 +54,7 @@ def funcWraper(name,meshpath):
 if __name__ == '__main__':
     start = time.time()
     o3d.utility.set_verbosity_level(o3d.utility.VerbosityLevel.Error)
-    instance = MultiPa3dmp(r"Data\\mvsnet000_l3.ply",r"Data\\5b21e18c58e2823a67a10dd8\\textured_mesh")
+    instance = MultiPa3dmp(r"Data\Test\Yard\EstimatedPointCloud\FusionPointClould.ply",r"Data\Test\Yard\ProvidedMeshModel\textured_mesh")
     Util.mkCleanDir(r"Workspace")
     Util.mkCleanDir(r"Workspace/txt")
     nameList = instance.mesh.getObjNameList()
@@ -61,14 +63,12 @@ if __name__ == '__main__':
 
     print("The random ID of this task is:{}".format(instance.randomId))
 
-    # for i in range(len(meshList)):
-    #     cur = nameList[i]
-    #     funcWraper(cur,instance.meshPath)
-    #     if i == 1:
-    #         break
-    # r = []
+    # #Testing Code
+    # cur = nameList[20]
+    # funcWraper(cur,instance.meshPath)
 
-    p = Pool()
+    #Running Code
+    p = Pool(processes=14)
     for i in range(len(meshList)):
         cur = nameList[i]
         p.apply_async(func = funcWraper,args=(cur,instance.meshPath))
@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     end = time.time()
     txtPath = instance.mergeTxt()
-    Pa3dmp.generateHistgram(txtPath)
+    Pa3dmp.generateHistogram(txtPath)
     shutil.rmtree("Workspace")
     print("Result Txt is {} and the histgram fig of this txt".format(txtPath))
     print("Executed Time:{}s".format(end-start))

@@ -37,6 +37,12 @@ class Util(object):
         return np.sum(np.power((actualValue-predictedValue),2))
 
     @staticmethod
+    def L2Norm3(x,y):
+        arr = np.array([x[0]-y[0],x[1]-y[1],x[2]-y[2]])
+        return np.linalg.norm(arr)
+
+
+    @staticmethod
     def loadImage(path):
         return cv2.imread(path)
 

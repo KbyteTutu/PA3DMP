@@ -52,7 +52,7 @@ class MeshData(object):
     def getMeshCombined(self):
         if len(self.__meshList)==0:
             self.getMeshList()
-        outMesh = o3d.open3d_pybind.geometry.TriangleMesh()
+        outMesh = o3d.geometry.TriangleMesh()
         for m in self.__meshList:
             outMesh += m
         print("Mesh Combined.")
@@ -175,7 +175,21 @@ if __name__ == "__main__":
     # o3d.io.write_point_cloud("WorkspaceTest\\1.ply",r,write_ascii=True,print_progress=True)
 
     testMesh = o3d.io.read_triangle_mesh(r"Data\Test\Yard\ProvidedMeshModel\textured_mesh\tile_4_3.obj")
-    m = len(testMesh.vertices)
-    b = testMesh.select_by_index(np.arange(0,m,1))
-    
+    [x0,y0,z0] = testMesh.get_min_bound()
+    [x1,y1,z1] = testMesh.get_max_bound()
+    x_offset = (x1-x0)/2
+    y_offset = (y1-y0)/2
+
+    ld_box= o3d.geometry.AxisAlignedBoundingBox([x0,y0,z0],[x0+x_offset,y0+y_offset,z1])
+    lu_box= o3d.geometry.AxisAlignedBoundingBox([x0,y0+y_offset,z0],[x0+x_offset,y1,z1])
+    rd_box= o3d.geometry.AxisAlignedBoundingBox([x0+x_offset,y0,z0],[x1,y0+y_offset,z1])
+    ru_box= o3d.geometry.AxisAlignedBoundingBox([x0+x_offset,y0+y_offset,z0],[x1,y1,z1])
+    ld_mesh = testMesh.crop(ld_box)
+    lu_mesh = testMesh.crop(lu_box)
+    rd_mesh = testMesh.crop(rd_box)
+    ru_mesh = testMesh.crop(ru_box)
+    o3d.io.write_triangle_mesh(r"Result\ld_mesh.obj",ld_mesh)
+    o3d.io.write_triangle_mesh(r"Result\lu_mesh.obj",lu_mesh)
+    o3d.io.write_triangle_mesh(r"Result\rd_mesh.obj",rd_mesh)
+    o3d.io.write_triangle_mesh(r"Result\ru_mesh.obj",ru_mesh)
     print ("1")

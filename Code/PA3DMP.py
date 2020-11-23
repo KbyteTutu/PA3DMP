@@ -18,73 +18,37 @@ class Pa3dmp(object):
 
     def p2fDistance(self,P,p1,p2,p3):
         # Point To Face Distance
-        point1 = np.asarray(p1)
-        point2 = np.asarray(p2)
-        point3 = np.asarray(p3)
-        point4 = np.asarray(P)
-        AB = np.asmatrix(point2 - point1)
-        AC = np.asmatrix(point3 - point1)
-        N = np.cross(AB, AC)  # 向量叉乘，求法向量
-        # Ax+By+Cz
-        Ax = N[0, 0]
-        By = N[0, 1]
-        Cz = N[0, 2]
-        D = -(Ax * point1[0] + By * point1[1] + Cz * point1[2])
-        mod_d = Ax * point4[0] + By * point4[1] + Cz * point4[2] + D
-        mod_area = np.sqrt(np.sum(np.square([Ax, By, Cz])))
-        d = abs(mod_d) / mod_area
-        return d
+        try:
+            point1 = np.asarray(p1)
+            point2 = np.asarray(p2)
+            point3 = np.asarray(p3)
+            point4 = np.asarray(P)
+            AB = np.asmatrix(point2 - point1)
+            AC = np.asmatrix(point3 - point1)
+            N = np.cross(AB, AC)  # 向量叉乘，求法向量
+            # Ax+By+Cz
+            Ax = N[0, 0]
+            By = N[0, 1]
+            Cz = N[0, 2]
+            D = -(Ax * point1[0] + By * point1[1] + Cz * point1[2])
+            mod_d = Ax * point4[0] + By * point4[1] + Cz * point4[2] + D
+            mod_area = np.sqrt(np.sum(np.square([Ax, By, Cz])))
+            if mod_area == 0:
+                d = 0
+                raise RuntimeWarning("divide_0")
+            d = abs(mod_d) / mod_area
+        except Exception as e:
+            #TODO:输出debug的log，看看报错是怎么回事。
+            info = [point1,point2,point3,point4,mod_area,mod_d]
+            Util.tempLog("{}".format(info))
+        finally:
+            return d
 
-    def loopForPoints(self,pointCloud,triangleMesh,radius):
-        # TODO:关于稀疏的情况的处理，自动匹配Radius
-        pointAmount = len(pointCloud.points)
-        re = np.zeros((0,13))
-        # build tree for search
-        meshKDtree = o3d.geometry.KDTreeFlann(triangleMesh)
-        verticesArr = np.asarray(triangleMesh.vertices)
-        #simple timer to estimate the process time
-        for pidx in range(len(pointCloud.points)):
-            p = pointCloud.points[pidx]
-            # m is the idx of all near points.knn is slow an
-            # m = meshKDtree.search_radius_vector_3d(p,radius)
-            # m = meshKDtree.search_knn_vector_3d(p,15)
-            m = meshKDtree.search_hybrid_vector_3d(p,radius,10)
-            if m[0] >7:
-                # create a box for m, to get sub mesh
-                pointsInBox = np.take(verticesArr,m[1],axis=0)
-                box = o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(pointsInBox))
-                # box = o3d.geometry.AxisAlignedBoundingBox.create_from_points(o3d.utility.Vector3dVector(pointsInBox))
-                #no need orientedboundingbox.
-                #get sub mesh
-                n = triangleMesh.crop(box)
-                nTriangles = np.asarray(n.triangles)
-                #temp flags
-                d = float('inf')
-                cur = np.zeros((1,9))
-                for pidxSmall in range(len(nTriangles)):
-                    idx = nTriangles[pidxSmall]
-                    p1= n.vertices[idx[0]]
-                    p2= n.vertices[idx[1]]
-                    p3= n.vertices[idx[2]]
-                    dTemp = self.p2fDistance(p,p1,p2,p3)
-                    if dTemp<d:
-                        d = dTemp
-                        # cur = np.asarray([p1[0],p1[1],p1[2],p2[0],p2[1],p2[2],p3[0],p3[1],p3[2]])
-                        cur = np.hstack((p1,p2,p3))
-                #write to r
-                if d!=float('inf'):
-                    temp =np.hstack((p,cur,d)).reshape((1,13))
-                    re = np.append(re,temp,axis=0)
-            # To stop earlier
-            # if pidx == 500:
-            #     break
-        return re
-
-    def loopForPoints_Remake(self,pointCloud,triangleMesh,flag=0):
+    def loopForPoints(self,pointCloud,triangleMesh,flag=0):
         #flag决定是使用hybrid还是radius。前者模糊但是更快，后者准确但是更慢
         try:
             #储存矩阵
-            savingMetrix = np.zeros((0,13))
+            savingMatrix = np.zeros((0,13))
             #mesh的KD树生成
             meshKDtree = o3d.geometry.KDTreeFlann(triangleMesh)
             verticesArr = np.asarray(triangleMesh.vertices)
@@ -141,19 +105,40 @@ class Pa3dmp(object):
                         p2= nMesh.vertices[idxx[1]]
                         p3= nMesh.vertices[idxx[2]]
                         dTemp = self.p2fDistance(p,p1,p2,p3)
-                        if dTemp<d:
+                        #If the distance is same,do an extra comparation
+                        if dTemp ==d:
+                            #TODO:加上相等的时候的函数
+                            pass
+                        elif dTemp<d:
                             d = dTemp
                             # cur = np.asarray([p1[0],p1[1],p1[2],p2[0],p2[1],p2[2],p3[0],p3[1],p3[2]])
                             cur = np.hstack((p1,p2,p3))
                     if d!=float('inf'):
                         temp =np.hstack((p,cur,d)).reshape((1,13))
-                        savingMetrix = np.append(savingMetrix,temp,axis=0)
+                        savingMatrix = np.append(savingMatrix,temp,axis=0)
                 except Exception as e:
                     print(e)
         except RuntimeError as e:
             print(e)
         finally:
-            return savingMetrix
+            return savingMatrix
+
+
+    def loopForMesh(self,mesh,pointCloud):
+        try:
+            PCKdTree = o3d.geometry.KDTreeFlann(pointCloud)
+            savingMatrix = np.zeros((0,7))
+            for idx in range(len(mesh.vertices)):
+                mp = mesh.vertices[idx]
+                re = PCKdTree.search_knn_vector_3d(mp,1)
+                target = pointCloud.points[re[1][0]]
+                d = Util.L2Norm3(mp,target)
+                cur = np.hstack((mp,target,d)).reshape(1,7)
+                savingMatrix = np.append(savingMatrix,cur,axis=0)
+        except Exception as e:
+            print(e)
+        finally:
+            return savingMatrix
 
 
     @staticmethod
@@ -182,14 +167,16 @@ class Pa3dmp(object):
         o3d.io.write_point_cloud(r".\Result\Result_{}.ply".format("CompareWithColor"),pc3,write_ascii=True,print_progress=True)
 
     @staticmethod
-    def generateHistogram(txt):
-        info = Util.analyzeFilePath(txt)
+    def generateHistogram(txt,prefix,rId):
         sns.set(style="darkgrid")
         data = np.loadtxt(txt)
-        dataX = data[:,-1]
-        sns.distplot(dataX,bins=100,kde=False)
-        plt.savefig(r"Result\Fig_of_{}.png".format(info[0]))
+        if len(data)>0:
+            dataX = data[:,-1]
+            sns.distplot(dataX,bins=50,kde=False)
+            plt.savefig(r"Result\{}\Fig_of_{}.png".format(rId,prefix))
         # plt.show()
+        else:
+            print("No enough data")
 
 
 if __name__ == "__main__":
@@ -252,15 +239,27 @@ if __name__ == "__main__":
 
     smallPly = o3d.io.read_point_cloud(r"WorkspaceTest\ply\tile_2_4.ply")
     smallMesh = o3d.io.read_triangle_mesh(r"WorkspaceTest\textured_mesh\tile_2_4.obj")
-    verticesArr = np.asarray(smallMesh.vertices)
+    # verticesArr = np.asarray(smallMesh.vertices)
 
-    p = smallPly.points[5000]
-    meshTree = o3d.geometry.KDTreeFlann(smallMesh)
-    r = meshTree.search_knn_vector_3d(p,100)
-    a = instance.computeRadius(p,r[1][20],smallMesh)
-    m = meshTree.search_hybrid_vector_3d(p,a,20)
-    pointsInBox = np.take(verticesArr,m[1],axis=0)
-    tempbox = o3d.geometry.AxisAlignedBoundingBox.create_from_points(o3d.utility.Vector3dVector(pointsInBox))
-    print(tempbox.is_empty())
+    # p = smallPly.points[5000]
+    # meshTree = o3d.geometry.KDTreeFlann(smallMesh)
+    # r = meshTree.search_knn_vector_3d(p,100)
+    # a = instance.computeRadius(p,r[1][20],smallMesh)
+    # m = meshTree.search_hybrid_vector_3d(p,a,20)
+    # pointsInBox = np.take(verticesArr,m[1],axis=0)
+    # tempbox = o3d.geometry.AxisAlignedBoundingBox.create_from_points(o3d.utility.Vector3dVector(pointsInBox))
+    # print(tempbox.is_empty())
+
+    # a = np.asarray(smallMesh.vertices)
+    tree = o3d.geometry.KDTreeFlann(smallPly)
+    re =tree.search_knn_vector_3d(smallMesh.vertices[1000],1)
+    rrr = np.zeros((0,7))
+    print(smallMesh.vertices[1000])
+    print(smallPly.points[re[1][0]])
+    d = Util.L2Norm3(smallMesh.vertices[1000],smallPly.points[re[1][0]])
+    cur = np.hstack((smallMesh.vertices[1000],smallPly.points[re[1][0]],d)).reshape(1,7)
+    rrr = np.append(rrr,cur,axis=0)
+
+
     print("Succeed")
 

@@ -88,9 +88,18 @@ class Util(object):
         except:
             return False
 
+    @staticmethod
+    def tempLog(info):
+        with open(r"Result\Debug\1.txt",mode='a') as f:
+            f.write(info + "\n")
+
+    @staticmethod
+    def getFileCnt(path):
+        return len([lists for lists in os.listdir(path) if os.path.isfile(os.path.join(path, lists))])
+
 if __name__ == "__main__":
     #Ignore these, a playground
 
     # a = np.cbrt(64)
     # # print(isinstance(4.0,float))
-    pass
+    print(Util.L2Norm3([1,1,0],[0,0,0]))

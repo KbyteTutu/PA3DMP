@@ -195,5 +195,4 @@ if __name__ == '__main__':
         f = os.path.join(path,dir)
         plyPath = os.path.join(f,"pc.ply")
         meshPath = os.path.join(f,"mesh")
-        # DoPA3DMP(plyPath,meshPath,14)
-        print(f)
+        DoPA3DMP(plyPath,meshPath,14)

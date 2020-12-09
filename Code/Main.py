@@ -121,11 +121,11 @@ def funcWraperMesh(name,meshpath):
     # pp.loopForMesh(curMesh.getMeshCombined(),o3d.io.read_point_cloud(plyPath))
 
 
-if __name__ == '__main__':
+def DoPA3DMP(plyPath,meshPath,poolNum):
     start = time.time()
     o3d.utility.set_verbosity_level(o3d.utility.VerbosityLevel.Error)
-    plyPath = r"Data\Test\Yard\EstimatedPointCloud\FusionPointClould.ply"
-    meshPath = r"Data\Test\Yard\ProvidedMeshModel\textured_mesh"
+    plyPath = plyPath
+    meshPath = meshPath
     instance = MultiPa3dmp(plyPath)
     Util.mkCleanDir(r"Workspace")
     Util.mkCleanDir(r"Workspace/txt")
@@ -148,7 +148,7 @@ if __name__ == '__main__':
     # funcWraperMesh(cur,r"Workspace/mesh")
 
     #Running Code
-    p = Pool(processes=10)
+    p = Pool(processes=poolNum)
     for i in range(len(meshList)):
         try:
             cur = nameList[i]
@@ -186,3 +186,14 @@ if __name__ == '__main__':
     shutil.rmtree("Workspace")
     print("Result Txt is {} and {}".format(txtPath,txtPath2))
     print("Executed Time:{}s".format(end-start))
+
+
+
+if __name__ == '__main__':
+    path = r"E:\OneDrive\CS800Run\PA3DMP\Data\ForReport"
+    for dir in os.listdir(path):
+        f = os.path.join(path,dir)
+        plyPath = os.path.join(f,"pc.ply")
+        meshPath = os.path.join(f,"mesh")
+        # DoPA3DMP(plyPath,meshPath,14)
+        print(f)

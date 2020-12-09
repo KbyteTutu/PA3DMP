@@ -178,10 +178,40 @@ class Pa3dmp(object):
         else:
             print("No enough data")
 
+    @staticmethod
+    def analyzeData(txt,prefix,rId,threshold):
+        data = np.loadtxt(txt)
+        if len(data)>0:
+            dataX = data[:,-1]
+            temp = []
+            plt.figure()
+            for d in tqdm(dataX):
+                if d<threshold:
+                    temp.append(d)
+            sns.distplot(temp,bins=100,kde=False)
+            plt.savefig(r"Result\{}\Fig_of_{}.png".format(rId,prefix),)
+            plt.close()
+        # plt.show()
+        else:
+            print("No enough data")
+
+def run(rId,threshold):
+    instance.analyzeData(r"Result\{}\Result_P2M.txt".format(rId),"fix_p2m_{}".format(threshold),rId,threshold)
+    instance.analyzeData(r"Result\{}\Result_M2P.txt".format(rId),"fix_m2p_{}".format(threshold),rId,threshold)
 
 if __name__ == "__main__":
     #ALLTEST CODE BELOW,JUST IGNORE
     instance = Pa3dmp()
+    run("T6Gnx7Ou",1.0)
+    run("T6Gnx7Ou",0.5)
+    run("T6Gnx7Ou",0.25)
+    run("T6Gnx7Ou",0.10)
+    run("ZMVU0B7u",0.03)
+    run("ZMVU0B7u",0.02)
+    run("ZMVU0B7u",0.01)
+    run("ZMVU0B7u",0.005)
+
+
 
     # a = o3d.io.read_point_cloud(r"E:\OneDrive\CS800Run\CompareScript\Data\PointCloud\mvsnet000_l3.ply")
     # b =o3d.geometry.PointCloud.remove_statistical_outlier(a,4,0.1)
@@ -237,8 +267,8 @@ if __name__ == "__main__":
     # # instance.compare(plyOpt,mesh)
     # instance.compareWithColoredPC(colored,mesh)
 
-    smallPly = o3d.io.read_point_cloud(r"WorkspaceTest\ply\tile_2_4.ply")
-    smallMesh = o3d.io.read_triangle_mesh(r"WorkspaceTest\textured_mesh\tile_2_4.obj")
+    # smallPly = o3d.io.read_point_cloud(r"WorkspaceTest\ply\tile_2_4.ply")
+    # smallMesh = o3d.io.read_triangle_mesh(r"WorkspaceTest\textured_mesh\tile_2_4.obj")
     # verticesArr = np.asarray(smallMesh.vertices)
 
     # p = smallPly.points[5000]
@@ -251,14 +281,14 @@ if __name__ == "__main__":
     # print(tempbox.is_empty())
 
     # a = np.asarray(smallMesh.vertices)
-    tree = o3d.geometry.KDTreeFlann(smallPly)
-    re =tree.search_knn_vector_3d(smallMesh.vertices[1000],1)
-    rrr = np.zeros((0,7))
-    print(smallMesh.vertices[1000])
-    print(smallPly.points[re[1][0]])
-    d = Util.L2Norm3(smallMesh.vertices[1000],smallPly.points[re[1][0]])
-    cur = np.hstack((smallMesh.vertices[1000],smallPly.points[re[1][0]],d)).reshape(1,7)
-    rrr = np.append(rrr,cur,axis=0)
+    # tree = o3d.geometry.KDTreeFlann(smallPly)
+    # re =tree.search_knn_vector_3d(smallMesh.vertices[1000],1)
+    # rrr = np.zeros((0,7))
+    # print(smallMesh.vertices[1000])
+    # print(smallPly.points[re[1][0]])
+    # d = Util.L2Norm3(smallMesh.vertices[1000],smallPly.points[re[1][0]])
+    # cur = np.hstack((smallMesh.vertices[1000],smallPly.points[re[1][0]],d)).reshape(1,7)
+    # rrr = np.append(rrr,cur,axis=0)
 
 
     print("Succeed")

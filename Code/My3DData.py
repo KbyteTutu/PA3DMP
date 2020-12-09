@@ -119,11 +119,13 @@ class PointCloudData(object):
             pointCloud = self.pointCloudData
             pDict = {}
             for i in range(len(meshBoxList)):
-                temp = pointCloud.crop(meshBoxList[i])
-                if saveFlag>0:
-                    o3d.io.write_point_cloud(r"Workspace\ply\{}.ply".format(nameList[i]),temp,write_ascii=True)
-                else:
-                    pDict[nameList[i]] = temp
+                if meshBoxList[i].is_empty() == False:
+                    temp = pointCloud.crop(meshBoxList[i])
+                    # if temp.points
+                    if saveFlag>0:
+                        o3d.io.write_point_cloud(r"Workspace\ply\{}.ply".format(nameList[i]),temp,write_ascii=True)
+                    else:
+                        pDict[nameList[i]] = temp
             if saveFlag>0:
                 print("Seperated point clouds saved.")
                 return
